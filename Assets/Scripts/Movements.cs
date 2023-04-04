@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 public class Movements : MonoBehaviour
 {
     [SerializeField]
-    Transform cubeTransform;
+    Rigidbody cubeRb;
 
     // Start is called before the first frame update
     void Start()
@@ -19,23 +19,23 @@ public class Movements : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Z))
         {
-            cubeTransform.Translate(Vector3.forward*0.02f);
+            cubeRb.AddForce(transform.forward * 6f, ForceMode.Force);
         }
         if (Input.GetKey(KeyCode.S))
         {
-            cubeTransform.Translate(Vector3.back*0.02f);
+            cubeRb.AddForce(transform.forward * -6f, ForceMode.Force);
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            cubeTransform.Translate(Vector3.left * 0.02f);
+            cubeRb.AddForce(transform.right * -6f, ForceMode.Force);
         }
         if (Input.GetKey(KeyCode.D))
         {
-            cubeTransform.Translate(Vector3.right * 0.02f);
+            cubeRb.AddForce(transform.right * 6f, ForceMode.Force);
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            cubeTransform.Translate(Vector3.up * 1f);
+            cubeRb.AddForce(transform.up * 600f, ForceMode.Force);
         }
     }
 }
