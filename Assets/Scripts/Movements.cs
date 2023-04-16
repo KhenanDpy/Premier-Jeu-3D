@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using UnityEditor.Animations;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,17 +7,24 @@ public class Movements : MonoBehaviour
     Animator animator;
     Rigidbody rb;
 
+    public bool regarderEnlAir;
+
     [SerializeField]
     Text text;
+    
+    [SerializeField]
+    Camera camera;
 
     [SerializeField]
-    List<AnimatorController> animations = new List<AnimatorController>();
+    float speed, jump, limit, zoom;
 
-    [SerializeField]
-    float speed, jump, limit;
-
+    /* Paramétrage de la souris */
+    float rotationX = 0f;
+    float maxRotationX = 30f;
+    float minRotationX = -30f;
     float rotationY = 0f;
-    public float sensitivity = 15f;
+    public float sensitivityH;
+    public float sensitivityV;
 
     //Grounded
     bool isGrounded;
@@ -37,74 +43,139 @@ public class Movements : MonoBehaviour
     void Update()
     {
         // rotation par la souris
-        rotationY += Input.GetAxis("Mouse X") * sensitivity;
+        rotationY += Input.GetAxis("Mouse X") * sensitivityH;
         rb.transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
+        if (regarderEnlAir) // pour activer le mouvement vertical de la caméra
+        {
+            float deltaX = -Input.GetAxis("Mouse Y") * sensitivityV;
+            if ((deltaX > 0) && (rotationX < maxRotationX))
+            {
+                rotationX += deltaX;
+                if (rotationX > maxRotationX)
+                    rotationX = maxRotationX;
+            }
+            else if ((deltaX < 0) && (rotationX > minRotationX))
+            {
+                rotationX += deltaX;
+                if (rotationX < minRotationX)
+                    rotationX = minRotationX;
+            }
+            float dy = 1.75f*(1f + rotationX / maxRotationX);
+            float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f);
+            camera.transform.SetLocalPositionAndRotation(new Vector3(0f, dy, dz), Quaternion.identity);
+            camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
+        }
+       
+
+        //à mettre dans la soutenance : pour faire tourner la caméra autour du personnage
+        //                              mais il faudrait adapter les déplacements (par rapport à la caméra) et les animations  
+
+        /*posCamera.Set(rb.transform.position.x + distance * Mathf.Cos(rotationY * Mathf.PI / 180f),
+                      rb.transform.position.y+3,
+                      rb.transform.position.z + distance * Mathf.Sin(rotationY * Mathf.PI / 180f));
+
+        camera.transform.SetPositionAndRotation(posCamera, Quaternion.identity);
+        camera.transform.LookAt(rb.transform.position);*/
+
         animator.SetBool("Forward", false);
+        animator.SetBool("Backward", false);
+        animator.SetBool("BackwardLeft", false);
+        animator.SetBool("BackwardRight", false);
+        animator.SetBool("ForwardLeft", false);
+        animator.SetBool("ForwardRight", false);
+        animator.SetBool("Left", false);
+        animator.SetBool("Right", false);
+
+
+        // Positionnement de la sphère au pied du personnage
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
+        // On teste les collisions de la sphère dans le GroundedLayers
+        isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
+        animator.SetBool("Grounded", isGrounded);
 
         // si on est au sol, on peut se déplacer
-        if (rb.position.y <= 0.02)
+        if (isGrounded) //rb.position.y <= 0.02)
         {
             animator.SetBool("Jump", false);
 
-            // Positionnement de la sphère au pied de l'Armature
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
-            // On teste les collisions de la sphère dans le GroundedLayers
-            isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
-            animator.SetBool("Grounded", isGrounded);
-
-            if ((Input.anyKey == false))//&& (rb.position.y<=0.1f))
+            // Si on n'appuie sur aucune touche
+            if ((Input.anyKey == false))
             {
-                //animator.runtimeAnimatorController = animations.ToArray()[1];
-                //rb.velocity = Vector3.zero; //stop les glissades
-                animator.SetBool("Idle", true);
-                rb.drag = 5f; // pour pas glisser
+                animator.SetBool("Idle", true); // L'animation Idle s'active
             }
             else
             {
-                animator.SetBool("Idle", false);
-                rb.drag = 0f;
+                animator.SetBool("Idle", false); // L'animation Idle se désactive
             }
 
-            if (Input.GetKey(KeyCode.Z))
+            // Si on appuie sur la touche "Z" ET "Q"
+            if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.Q))
             {
-                animator.SetBool("Forward", true);
-                //animator.runtimeAnimatorController = animations.ToArray()[7];
+                animator.SetBool("ForwardLeft", true);
+                if (rb.velocity.magnitude < limit)
+                    rb.AddForce((transform.forward-transform.right) * speed);
+            }
+            // Sinon si on appuie sur la touche "Z" ET "D"
+            else if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.D))
+            {
+                animator.SetBool("ForwardRight", true);
+                if (rb.velocity.magnitude < limit)
+                    rb.AddForce((transform.forward + transform.right) * speed);
+            }
+            // Si on appuie sur la touche "S" ET "Q"
+            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.Q))
+            {
+                animator.SetBool("BackwardLeft", true);
+                if (rb.velocity.magnitude < limit)
+                    rb.AddForce((-transform.forward - transform.right) * speed);
+            }
+            // Sinon si on appuie sur la touche "S" ET "D"
+            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+            {
+                animator.SetBool("BackwardRight", true);
+                if (rb.velocity.magnitude < limit)
+                    rb.AddForce((-transform.forward + transform.right) * speed);
+            }
+            // Sinon si on appuie sur la touche "Z"
+            else if (Input.GetKey(KeyCode.Z))
+            {
+                animator.SetBool("Forward", true); // L'animation Forward s'active
                 if (rb.velocity.magnitude < limit)
                     rb.AddForce(transform.forward * speed);
             }
-            if (Input.GetKey(KeyCode.S))
+            // Sinon si on appuie sur la touche "S"
+            else if (Input.GetKey(KeyCode.S))
             {
-                //animator.runtimeAnimatorController = animations.ToArray()[7];
+                animator.SetBool("Backward", true); // L'animation Backward s'active
                 if (rb.velocity.magnitude < limit)
-                    rb.AddForce(transform.forward * -speed);
+                    rb.AddForce(-transform.forward * speed);
             }
-            if (Input.GetKey(KeyCode.Q))
+            // Sinon si on appuie sur la touche "Q"
+            else if (Input.GetKey(KeyCode.Q))
             {
-                //animator.runtimeAnimatorController = animations.ToArray()[5];
+                animator.SetBool("Left", true);
                 if (rb.velocity.magnitude < limit)
-                    rb.AddForce(transform.right * -speed);
+                    rb.AddForce(-transform.right * speed);
             }
-            if (Input.GetKey(KeyCode.D))
+            // Sinon si on appuie sur la touche "D"
+            else if (Input.GetKey(KeyCode.D))
             {
-                //animator.runtimeAnimatorController = animations.ToArray()[5];
+                animator.SetBool("Right", true);
                 if (rb.velocity.magnitude < limit)
                     rb.AddForce(transform.right * speed);
             }
+
+            // Si on appuie sur la barre d'espace
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                animator.SetBool("Jump", true);
-                animator.SetBool("Grounded", false);
-                //animator.runtimeAnimatorController = animations.ToArray()[2];
+                animator.SetBool("Jump", true); // L'animation Jump s'active
+                animator.SetBool("Grounded", false); // L'animation Grounded se désactive
                 rb.AddForce(transform.up * jump);
 
             }
 
             text.text = "Vitesse : " + rb.velocity.magnitude.ToString();
-            /*else
-            {
-                animator.runtimeAnimatorController = animations.ToArray()[1];
-            }*/
         }
     }
 }
