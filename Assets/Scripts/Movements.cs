@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -94,10 +93,10 @@ public class Movements : MonoBehaviour
         isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
         animator.SetBool("Grounded", isGrounded);
 
-        // si on est au sol, on peut se déplacer
-        if (isGrounded) //rb.position.y <= 0.02)
-        {
-            animator.SetBool("Jump", false);
+
+        //if (isGrounded) // si on est au sol, on peut se déplacer
+        //{
+        animator.SetBool("Jump", false);
 
             // Si on n'appuie sur aucune touche
             if ((Input.anyKey == false))
@@ -167,7 +166,7 @@ public class Movements : MonoBehaviour
             }
 
             // Si on appuie sur la barre d'espace
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
             {
                 animator.SetBool("Jump", true); // L'animation Jump s'active
                 animator.SetBool("Grounded", false); // L'animation Grounded se désactive
@@ -176,6 +175,6 @@ public class Movements : MonoBehaviour
             }
 
             text.text = "Vitesse : " + rb.velocity.magnitude.ToString();
-        }
+        //}
     }
 }
