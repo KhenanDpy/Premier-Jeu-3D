@@ -12,7 +12,7 @@ public class Movements : MonoBehaviour
     Text text;
     
     [SerializeField]
-    Camera camera;
+    Camera _camera;
 
     [SerializeField]
     float speed, jump, limit, zoom;
@@ -62,8 +62,8 @@ public class Movements : MonoBehaviour
             }
             float dy = 1.75f*(1f + rotationX / maxRotationX);
             float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f);
-            camera.transform.SetLocalPositionAndRotation(new Vector3(0f, dy, dz), Quaternion.identity);
-            camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
+            _camera.transform.SetLocalPositionAndRotation(new Vector3(0f, dy, dz), Quaternion.identity);
+            _camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
         }
        
 

@@ -1904,7 +1904,7 @@ MonoBehaviour:
   text: {fileID: 1110156981}
   camera: {fileID: 1782876993}
   speed: 1500
-  jump: 17500
+  jump: 20000
   limit: 10
   zoom: 5
   sensitivityH: 8
