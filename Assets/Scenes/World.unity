@@ -1509,7 +1509,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _movePosTransform: {fileID: 66605336}
-  _camera: {fileID: 1782876993}
   _plane: {fileID: 1972179546}
 --- !u!195 &1753321650
 NavMeshAgent:
@@ -1902,7 +1901,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   regarderEnlAir: 1
   text: {fileID: 1110156981}
-  camera: {fileID: 1782876993}
+  _camera: {fileID: 1782876993}
   speed: 1500
   jump: 20000
   limit: 10
