@@ -175,6 +175,7 @@ public class Movements : MonoBehaviour
 
             }
 
+            // Zoom avec la molette de la souris
             if (Input.mouseScrollDelta.y > 0 && zoom > 0)
             {
                 zoom--;
