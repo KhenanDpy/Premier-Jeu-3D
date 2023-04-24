@@ -1,7 +1,9 @@
+using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = System.Random;
-using Convert = System.Convert;
 
 public class MonsterNavMesh : MonoBehaviour
 {
@@ -11,40 +13,52 @@ public class MonsterNavMesh : MonoBehaviour
 
     NavMeshAgent _navMeshAgent;
 
-    int i;
     /*int planeX;
     int planeZ;*/
 
     Random rand = new Random();
 
-    private void Awake()
+    void Awake()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         /*int planeX = Convert.ToInt32(_plane.transform.localScale.x);      J'ai essayé de récupérer la taille du plan mais ça m'affiche 0,0,0.
         int planeZ = Convert.ToInt32(_plane.transform.localScale.z);*/
     }
 
-    private int Timer()
+    void Start()
     {
-        i++;
-        if(i == 1001)
-        {
-            i = 0;
-        }
+        StartCoroutine(MyUpdate());
+    }
 
-        return i;
+    float timerTime;
+
+    IEnumerator MyUpdate()
+    {
+        while (true)
+        {
+            float seconds = rand.Next(3,7); // On attend entre 3 et 7 secondes avant de faire changer la position du monstre
+            Debug.Log(seconds);
+            yield return new WaitForSeconds(seconds);
+            _movePosTransform.transform.position = new Vector3(rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)),
+                                                               0, 
+                                                               rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)));
+            _navMeshAgent.destination = _movePosTransform.position;
+
+        }
     }
 
     void Update()
     {
-        Timer();
 
-        if (Timer() == 1000)
+        /*timerTime += Time.deltaTime;
+
+        if (timerTime >= 3)
         {
+            timerTime = 0;
             Debug.Log("pop");
             _movePosTransform.transform.position = new Vector3(rand.Next(-20, 20), 0, rand.Next(-20, 20)); //rand.Next(-planeX, planeX), 0, rand.Next(-planeZ, planeZ)); avec la scale du plan.
-        }
-        _navMeshAgent.destination = _movePosTransform.position;
+            _navMeshAgent.destination = _movePosTransform.position;
+        }*/             // Autre genre de timer
 
         /*if (Input.GetMouseButtonDown(0))
         {

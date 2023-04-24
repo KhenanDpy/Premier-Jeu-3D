@@ -5,8 +5,7 @@ public class Movements : MonoBehaviour
 {
     Animator animator;
     Rigidbody rb;
-
-    public bool regarderEnlAir;
+    public bool lookUp;
 
     [SerializeField]
     Text text;
@@ -15,7 +14,7 @@ public class Movements : MonoBehaviour
     Camera _camera;
 
     [SerializeField]
-    float speed, jump, limit, zoom;
+    float force, jump, speedLimit, acceleration, zoom;
 
     /* Paramétrage de la souris */
     float rotationX = 0f;
@@ -41,11 +40,13 @@ public class Movements : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        force =2* rb.mass * acceleration;
+
         // rotation par la souris
         rotationY += Input.GetAxis("Mouse X") * sensitivityH;
         rb.transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
-        if (regarderEnlAir) // pour activer le mouvement vertical de la caméra
+        if (lookUp) // pour activer le mouvement vertical de la caméra
         {
             float deltaX = -Input.GetAxis("Mouse Y") * sensitivityV;
             if ((deltaX > 0) && (rotationX < maxRotationX))
@@ -112,57 +113,57 @@ public class Movements : MonoBehaviour
             if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.Q))
             {
                 animator.SetBool("ForwardLeft", true);
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce((transform.forward-transform.right) * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce((transform.forward-transform.right) * force);
             }
             // Sinon si on appuie sur la touche "Z" ET "D"
             else if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.D))
             {
                 animator.SetBool("ForwardRight", true);
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce((transform.forward + transform.right) * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce((transform.forward + transform.right) * force);
             }
             // Si on appuie sur la touche "S" ET "Q"
             else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.Q))
             {
                 animator.SetBool("BackwardLeft", true);
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce((-transform.forward - transform.right) * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce((-transform.forward - transform.right) * force);
             }
             // Sinon si on appuie sur la touche "S" ET "D"
             else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
             {
                 animator.SetBool("BackwardRight", true);
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce((-transform.forward + transform.right) * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce((-transform.forward + transform.right) * force);
             }
             // Sinon si on appuie sur la touche "Z"
             else if (Input.GetKey(KeyCode.Z))
             {
                 animator.SetBool("Forward", true); // L'animation Forward s'active
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce(transform.forward * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce(transform.forward * force);
             }
             // Sinon si on appuie sur la touche "S"
             else if (Input.GetKey(KeyCode.S))
             {
                 animator.SetBool("Backward", true); // L'animation Backward s'active
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce(-transform.forward * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce(-transform.forward * force);
             }
             // Sinon si on appuie sur la touche "Q"
             else if (Input.GetKey(KeyCode.Q))
             {
                 animator.SetBool("Left", true);
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce(-transform.right * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce(-transform.right * force);
             }
             // Sinon si on appuie sur la touche "D"
             else if (Input.GetKey(KeyCode.D))
             {
                 animator.SetBool("Right", true);
-                if (rb.velocity.magnitude < limit)
-                    rb.AddForce(transform.right * speed);
+                if (rb.velocity.magnitude < speedLimit)
+                    rb.AddForce(transform.right * force);
             }
 
             // Si on appuie sur la barre d'espace
@@ -172,6 +173,15 @@ public class Movements : MonoBehaviour
                 animator.SetBool("Grounded", false); // L'animation Grounded se désactive
                 rb.AddForce(transform.up * jump);
 
+            }
+
+            if (Input.mouseScrollDelta.y > 0 && zoom > 0)
+            {
+                zoom--;
+            }
+            else if (Input.mouseScrollDelta.y < 0 && zoom < 5)
+            {
+                zoom++;
             }
 
             text.text = "Vitesse : " + rb.velocity.magnitude.ToString();
