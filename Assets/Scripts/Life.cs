@@ -4,17 +4,34 @@ using UnityEngine;
 
 public class Life : MonoBehaviour
 {
-    [SerializeField] int life;
+    [SerializeField] GameObject[] hearts; 
+    int life;
+    bool dead;
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        life = hearts.Length;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (dead == true)
+        {
+            Debug.Log("you died");
+            // TODO death code
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (life >= 1)
+        {
+            life -= damage;
+            Destroy(hearts[life].gameObject);
+            if (life < 1)
+            {
+                dead = true;
+            }
+        }
     }
 }
