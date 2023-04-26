@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Coin
   - Enemy
+  - Weakness
+  - Damageing
   layers:
   - Default
   - TransparentFX
