@@ -25,8 +25,9 @@ public class CoinGenerator : MonoBehaviour
             int randomSpawn = rand.Next(children);
             var coins = Instantiate(coin,transform.position, transform.rotation); // platformsParent.transform.GetChild(randomSpawn).position, platformsParent.transform.GetChild(randomSpawn).rotation);
             Debug.Log(platformsParent.transform.GetChild(randomSpawn).name + platformsParent.transform.GetChild(randomSpawn).position);
-            coins.transform.position +=  UnityEngine.Vector3.up * 2.0f;
             coins.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
+            coins.transform.position +=  UnityEngine.Vector3.up * 2.0f;
+            
         }
     }
 }
