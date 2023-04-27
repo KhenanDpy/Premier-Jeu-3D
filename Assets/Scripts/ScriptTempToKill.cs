@@ -7,10 +7,6 @@ public class ScriptTempToKill : MonoBehaviour // Mettre tout le contenu de ce sc
 {
     public Life life;
 
-    float invincibilityFrame = 0.0f;
-
-    bool touched = false;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -26,22 +22,18 @@ public class ScriptTempToKill : MonoBehaviour // Mettre tout le contenu de ce sc
         }else if (collision.collider.gameObject.CompareTag("Damageing"))
         {
             Debug.Log("touche");
-            touched = true;
-            if (touched && invincibilityFrame <= 0.0f)
-            {
-                life.TakeDamage(1);
-                invincibilityFrame += Time.deltaTime;
-            }
-            touched = false;
+            life.TakeDamage(1);
         }
+    }
+
+    private void ResetCollision()
+    {
+        //canTouch = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (invincibilityFrame >= invincibilityFrame+Time.deltaTime)
-        {
-            invincibilityFrame = 0.0f;
-        }
+        
     }
 }
