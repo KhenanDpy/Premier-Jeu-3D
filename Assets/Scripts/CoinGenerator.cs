@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using Random = System.Random;
 
 public class CoinGenerator : MonoBehaviour
 {
@@ -10,7 +8,7 @@ public class CoinGenerator : MonoBehaviour
     [SerializeField]
     private GameObject coin;
     public GameObject platformsParent;
-    Random rand = new Random();
+    System.Random rand = new System.Random();
     int children;
 
     void Start()
@@ -23,11 +21,14 @@ public class CoinGenerator : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             int randomSpawn = rand.Next(children);
-            var coins = Instantiate(coin,transform.position, transform.rotation); // platformsParent.transform.GetChild(randomSpawn).position, platformsParent.transform.GetChild(randomSpawn).rotation);
-            Debug.Log(platformsParent.transform.GetChild(randomSpawn).name + platformsParent.transform.GetChild(randomSpawn).position);
-            coins.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
-            coins.transform.position +=  UnityEngine.Vector3.up * 2.0f;
+            var coins = Instantiate(coin);//,transform.position, transform.rotation); // platformsParent.transform.GetChild(randomSpawn).position, platformsParent.transform.GetChild(randomSpawn).rotation);
+
+            GameObject inter = new GameObject();
+            inter.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
             
+            inter.transform.localPosition =  Vector3.zero + Vector3.up * 2.0f;
+            
+            coins.transform.parent = inter.transform;
         }
     }
 }
