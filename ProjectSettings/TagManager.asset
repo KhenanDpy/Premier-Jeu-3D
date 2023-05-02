@@ -4,10 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Coin
   - Enemy
   - Weakness
   - Damageing
+  - GoldCoin
+  - SilverCoin
   layers:
   - Default
   - TransparentFX

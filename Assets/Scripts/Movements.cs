@@ -8,9 +8,7 @@ public class Movements : MonoBehaviour
     Animator animator;
     Rigidbody rb;
     public bool lookUp;
-
-    [SerializeField]
-    Text text;
+    public bool alive   = true;
 
     [SerializeField]
     Camera _camera;
@@ -33,6 +31,7 @@ public class Movements : MonoBehaviour
     float groundedOffset = -0.14f;
     float groundedRadius = 0.32f;
     public LayerMask groundLayers;
+    public float airSpeedFactor;
 
     private Vector3 deplacement;
     private float limit;
@@ -41,7 +40,7 @@ public class Movements : MonoBehaviour
     private int fdir = 0, rdir = 0;
 
 
-    private bool CaGrimpe()
+    private bool Climbing()
     {
         if (Physics.Raycast(rb.transform.position, Vector3.down, out slope, 0.2f))
         {
@@ -63,7 +62,7 @@ public class Movements : MonoBehaviour
     {
         if (collision.collider.gameObject.CompareTag("Damageing"))
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            rb.velocity = Vector3.zero;
             rb.AddForce((transform.up - transform.forward).normalized * jump, ForceMode.Impulse);
             Debug.Log("on recule");
         }
@@ -71,85 +70,85 @@ public class Movements : MonoBehaviour
 
     void Update()
     {
-        // gestion de la souris
-        WhereToLook();
-
-        // Positionnement de la sphère au pied du personnage
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
-        // On teste les collisions de la sphère dans le GroundedLayers
-        isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
-        animator.SetBool("Grounded", isGrounded);
-
-        if (isGrounded)
-            rb.drag = 5;
-        else
-            rb.drag = 0;
-
-        //if (isGrounded) // si on est au sol, on peut se déplacer
-        //{
-
-
-
-        // Si on n'appuie sur aucune touche
-        if ((Input.anyKey == false))
+        if (alive)
         {
-            animator.SetBool("Idle", true); // L'animation Idle s'active
+
+            // gestion de la souris
+            WhereToLook();
+
+            // Positionnement de la sphère au pied du personnage
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
+            // On teste les collisions de la sphère dans le GroundedLayers
+            isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
+            animator.SetBool("Grounded", isGrounded);
+
+            if (isGrounded)
+                rb.drag = 5;
+            else
+                rb.drag = 0;
+
+            // Si on n'appuie sur aucune touche
+            if ((Input.anyKey == false))
+            {
+                animator.SetBool("Idle", true); // L'animation Idle s'active
+            }
+            else
+            {
+                animator.SetBool("Idle", false); // L'animation Idle se désactive
+            }
+
+
+            limit = speedLimit;
+            if (Input.GetKey(KeyCode.LeftShift))
+                limit *= 1.5f;
+            if(!isGrounded)
+            {
+                limit *= airSpeedFactor;
+            }
+
+            if (Input.GetKey(KeyCode.Z))
+            {
+                fdir = 1;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                fdir = -1;
+            }
+            else
+                fdir = 0;
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                rdir = 1;
+            }
+            else if (Input.GetKey(KeyCode.Q))
+            {
+                rdir = -1;
+            }
+            else
+                rdir = 0;
+
+            Animate();
+
+            // Si on appuie sur la barre d'espace
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            {
+                animator.SetBool("Jump", true); // L'animation Jump s'active
+                animator.SetBool("Grounded", false); // L'animation Grounded se désactive
+
+                rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                rb.AddForce(transform.up * jump, ForceMode.Impulse);
+
+            }
+
         }
-        else
-        {
-            animator.SetBool("Idle", false); // L'animation Idle se désactive
-        }
-
-
-        limit = speedLimit;
-        if (Input.GetKey(KeyCode.LeftShift))
-            limit *= 2;
-
-        if (Input.GetKey(KeyCode.Z))
-        {
-            fdir = 1;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            fdir = -1;
-        }
-        else
-            fdir = 0;
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            rdir = 1;
-        }
-        else if (Input.GetKey(KeyCode.Q))
-        {
-            rdir = -1;
-        }
-        else
-            rdir = 0;
-
-        Animate();
-
-        // Si on appuie sur la barre d'espace
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            animator.SetBool("Jump", true); // L'animation Jump s'active
-            animator.SetBool("Grounded", false); // L'animation Grounded se désactive
-
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            rb.AddForce(transform.up * jump, ForceMode.Impulse);
-
-        }
-
-
-
-        //}
     }
 
     // on dirait que le déplacement est plus fluide quand c'est dans le fixedupdate plutôt que le update
     private void FixedUpdate()
     {
         deplacement = (transform.forward * fdir + transform.right * rdir).normalized;
-        if (CaGrimpe())
+        if (Climbing())
         {
             deplacement = (Vector3.ProjectOnPlane(deplacement, slope.normal) + Vector3.down * 0.01f).normalized;
         }
@@ -162,8 +161,6 @@ public class Movements : MonoBehaviour
             Vector3 maxSpeed = horizontalSpeed.normalized * limit;
             rb.velocity = new Vector3(maxSpeed.x, rb.velocity.y, maxSpeed.z);
         }
-
-        text.text = "Vitesse : " + rb.velocity.magnitude.ToString();
     }
 
     private void WhereToLook()

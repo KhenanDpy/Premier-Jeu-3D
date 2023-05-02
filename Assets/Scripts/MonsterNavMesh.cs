@@ -8,6 +8,7 @@ using Random = System.Random;
 public class MonsterNavMesh : MonoBehaviour
 {
     [SerializeField] private Transform _movePosTransform;
+    [SerializeField] private Transform player;
     //[SerializeField] private Camera _camera;
     //[SerializeField] private GameObject _plane;
 
@@ -17,6 +18,9 @@ public class MonsterNavMesh : MonoBehaviour
     int planeZ;*/
 
     Random rand = new Random();
+
+    /* Pour le field of view */
+    bool pursuit;
 
     void Awake()
     {
@@ -28,21 +32,55 @@ public class MonsterNavMesh : MonoBehaviour
     void Start()
     {
         StartCoroutine(MyUpdate());
+        //StartCoroutine(ChaseMode());
     }
 
     float timerTime;
 
+   /* IEnumerator ChaseMode()
+    {
+        if (pursuit)
+        {
+            transform.GetChild(5).transform.gameObject.SetActive(false);
+            yield return new WaitForSeconds(2);
+            transform.GetChild(5).transform.gameObject.SetActive(true);
+            // on suit le personnage
+            _navMeshAgent.destination = player.position;
+            Debug.Log("a bougé");
+        }
+    }*/
     IEnumerator MyUpdate()
     {
         while (true)
         {
-            float seconds = rand.Next(3,7); // On attend entre 3 et 7 secondes avant de faire changer la position du monstre
-            yield return new WaitForSeconds(seconds);
-            _movePosTransform.transform.position = new Vector3(rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)),
-                                                               0,
-                                                               rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)));
-            _navMeshAgent.destination = _movePosTransform.position;
+            if (pursuit)
+            {
+                transform.GetChild(5).transform.gameObject.SetActive(false);
+                yield return new WaitForSeconds(2);
+                transform.GetChild(5).transform.gameObject.SetActive(true);
+                // on suit le personnage
+                _navMeshAgent.destination = player.position;
+                Debug.Log("a bougé");
+            }
+            else
+            {
+                float seconds = rand.Next(3,7); // On attend entre 3 et 7 secondes avant de faire changer la position du monstre
+                yield return new WaitForSeconds(seconds);
+                _movePosTransform.transform.position = new Vector3(rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)),
+                                                                   0,
+                                                                   rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)));
+                _navMeshAgent.destination = _movePosTransform.position;
+            }
+            pursuit = false;
+        }
+    }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("trigger avec " + other);
+            pursuit = true;
         }
     }
 

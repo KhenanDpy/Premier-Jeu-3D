@@ -14,17 +14,26 @@ public class PickUpCoins : MonoBehaviour
         Init();
     }
 
-    void Init()
+    public void Init()
     {
         points = 0;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Coin"))
+        GameObject father = other.transform.parent.gameObject;
+
+        if (other.gameObject.CompareTag("GoldCoin"))
+        {
+            points += 5;
+            Destroy(other.gameObject); 
+            Destroy(father);
+        }
+        if (other.gameObject.CompareTag("SilverCoin"))
         {
             points++;
             Destroy(other.gameObject);
+            Destroy(father);
         }
     }
 
