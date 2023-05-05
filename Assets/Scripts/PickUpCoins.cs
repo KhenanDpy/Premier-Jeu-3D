@@ -5,8 +5,12 @@ using Unity.VisualScripting;
 public class PickUpCoins : MonoBehaviour
 {
     public TMP_Text score;
+    public TMP_Text lockerScore;
 
     int points;
+    public int pointsToDZ;
+
+    public CoinGenerator coinGoal;
 
     // Start is called before the first frame update
     void Start()
@@ -28,18 +32,27 @@ public class PickUpCoins : MonoBehaviour
             points += 5;
             Destroy(other.gameObject); 
             Destroy(father);
+            if (points >= pointsToDZ)
+            {
+                coinGoal.coinGoalReached = false;
+            }
         }
         if (other.gameObject.CompareTag("SilverCoin"))
         {
             points++;
             Destroy(other.gameObject);
             Destroy(father);
+            if (points >= pointsToDZ)
+            {
+                coinGoal.coinGoalReached = false;
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        score.text = "x " + points.ToString();
+        score.text = points.ToString() + " / " + pointsToDZ.ToString();
+        lockerScore.text = "Encore " + (pointsToDZ-points).ToString() + " pièces pour ouvrir";
     }
 }

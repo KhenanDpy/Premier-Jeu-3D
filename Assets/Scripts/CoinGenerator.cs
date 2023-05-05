@@ -10,6 +10,10 @@ public class CoinGenerator : MonoBehaviour
     System.Random rand = new System.Random();
     int children;
 
+    /* pour accéder à la dark zone */
+    public bool coinGoalReached;
+    public GameObject darkZoneGate;
+
     void Start()
     {
         children = platformsParent.transform.childCount;
@@ -27,28 +31,37 @@ public class CoinGenerator : MonoBehaviour
         int randomCoinType = rand.Next(10);
         int spawnDelay = rand.Next(3, 5);
 
-        if (randomCoinType > 8)
+        if (coinGoalReached)
         {
-            coin = coinType[0];
+
+            if (randomCoinType > 8)
+            {
+                coin = coinType[0];
+            }
+            else
+            {
+                coin = coinType[1];
+            }
+
+            if (platformsParent.transform.GetChild(randomSpawn).transform.childCount == 1)
+            {
+                var coins = Instantiate(coin);//,transform.position, transform.rotation); // platformsParent.transform.GetChild(randomSpawn).position, platformsParent.transform.GetChild(randomSpawn).rotation);
+
+                GameObject inter = new GameObject();
+                inter.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
+
+                inter.transform.localPosition = Vector3.zero + Vector3.up * 2.0f;
+
+                coins.transform.parent = inter.transform;
+
+                Destroy(platformsParent.transform.GetChild(randomSpawn).transform.GetChild(1).transform.gameObject, 10f);
+            }
         }
         else
         {
-            coin = coinType[1];
+            darkZoneGate.SetActive(false);
         }
 
-        if (platformsParent.transform.GetChild(randomSpawn).transform.childCount == 0)
-        {
-            var coins = Instantiate(coin);//,transform.position, transform.rotation); // platformsParent.transform.GetChild(randomSpawn).position, platformsParent.transform.GetChild(randomSpawn).rotation);
-
-            GameObject inter = new GameObject();
-            inter.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
-
-            inter.transform.localPosition = Vector3.zero + Vector3.up * 2.0f;
-
-            coins.transform.parent = inter.transform;
-
-            Destroy(platformsParent.transform.GetChild(randomSpawn).transform.GetChild(0).transform.gameObject, 5f);
-        }
         Invoke("Spawn", spawnDelay);
 
     }
@@ -57,8 +70,8 @@ public class CoinGenerator : MonoBehaviour
     {
         for (int i = 0; i < children; i++)
         {
-            if (platformsParent.transform.GetChild(i).transform.childCount > 0)
-                Destroy(platformsParent.transform.GetChild(i).transform.GetChild(0).transform.gameObject);
+            if (platformsParent.transform.GetChild(i).transform.childCount > 1)
+                Destroy(platformsParent.transform.GetChild(i).transform.GetChild(1).transform.gameObject);
         }
     }
 }

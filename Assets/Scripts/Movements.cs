@@ -39,6 +39,10 @@ public class Movements : MonoBehaviour
     // front and right direction (-1, 0, or 1)
     private int fdir = 0, rdir = 0;
 
+    /* Pour les sons */
+    bool walk, run, landing;
+    public Sounds sounds;
+
 
     private bool Climbing()
     {
@@ -100,7 +104,10 @@ public class Movements : MonoBehaviour
 
             limit = speedLimit;
             if (Input.GetKey(KeyCode.LeftShift))
+            {
                 limit *= 1.5f;
+            }
+                
             if(!isGrounded)
             {
                 limit *= airSpeedFactor;
@@ -141,6 +148,10 @@ public class Movements : MonoBehaviour
 
             }
 
+        }
+        else
+        {
+            transform.rotation = Quaternion.identity;
         }
     }
 

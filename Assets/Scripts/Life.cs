@@ -6,13 +6,11 @@ using UnityEngine;
 public class Life : MonoBehaviour
 {
     [SerializeField] GameObject[] hearts;
-    [SerializeField] Countdown countdown;
     public int life;
     public Movements player;
     public GameObject deadGO;
-    public PickUpCoins resetCoinsValue;
-    public CoinGenerator resetCoins;
     public Transform respawn;
+    public GameController controller;
 
     //faire un bouton pour respawn
 
@@ -32,9 +30,9 @@ public class Life : MonoBehaviour
             hearts[i].gameObject.SetActive(true);
         }
         life = hearts.Length;
-        countdown.Reset();
-        resetCoins.RemoveAll();
-        resetCoinsValue.Init();
+        
+
+        controller.ResetAll();
     }
 
     void Update()

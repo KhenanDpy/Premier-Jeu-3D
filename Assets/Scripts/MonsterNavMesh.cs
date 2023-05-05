@@ -55,12 +55,14 @@ public class MonsterNavMesh : MonoBehaviour
         {
             if (pursuit)
             {
-                transform.GetChild(5).transform.gameObject.SetActive(false);
-                yield return new WaitForSeconds(2);
-                transform.GetChild(5).transform.gameObject.SetActive(true);
                 // on suit le personnage
-                _navMeshAgent.destination = player.position;
-                Debug.Log("a bougé");
+                // on ne teste plus les triggers pendant 2s
+                transform.GetChild(5).transform.gameObject.SetActive(false);
+                // Debug.Log("a bougé");
+                yield return new WaitForSeconds(2);
+                // on va relancer les triggers pour tester si on voit toujours le personnage
+                pursuit = false;
+                transform.GetChild(5).transform.gameObject.SetActive(true);
             }
             else
             {
@@ -68,10 +70,8 @@ public class MonsterNavMesh : MonoBehaviour
                 yield return new WaitForSeconds(seconds);
                 _movePosTransform.transform.position = new Vector3(rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)),
                                                                    0,
-                                                                   rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)));
-                _navMeshAgent.destination = _movePosTransform.position;
+                                                                   rand.Next(Convert.ToInt32(transform.position.z - 20), Convert.ToInt32(transform.position.z + 20)));
             }
-            pursuit = false;
         }
     }
 
@@ -86,6 +86,17 @@ public class MonsterNavMesh : MonoBehaviour
 
     void Update()
     {
+        if (pursuit)
+        {
+            // on suit le personnage
+            _navMeshAgent.destination = player.position;
+            Debug.Log("suit");
+        }
+        else
+        {
+            _navMeshAgent.destination = _movePosTransform.position;
+            Debug.Log("se balade");
+        }
 
         /*timerTime += Time.deltaTime;
 
