@@ -95,6 +95,7 @@ public class Movements : MonoBehaviour
             if ((Input.anyKey == false))
             {
                 animator.SetBool("Idle", true); // L'animation Idle s'active
+                sounds.audioSource.Stop();
             }
             else
             {
@@ -174,6 +175,8 @@ public class Movements : MonoBehaviour
         }
     }
 
+    /*private Vector3 cameraWantedPosition; *A* */
+
     private void WhereToLook()
     {
         // rotation par la souris
@@ -197,7 +200,10 @@ public class Movements : MonoBehaviour
             }
             float dy = 1.75f * (1f + rotationX / maxRotationX);
             float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f);
-            _camera.transform.SetLocalPositionAndRotation(new Vector3(0f, dy, dz), Quaternion.identity);
+            //cameraWantedPosition = new Vector3(0f, dy, dz); *A*
+
+
+            _camera.transform.localPosition = new Vector3(0f, dy, dz);
             _camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
         }
         //à mettre dans la soutenance : pour faire tourner la caméra autour du personnage
@@ -236,6 +242,7 @@ public class Movements : MonoBehaviour
 
         if (fdir == 1)
         {
+            sounds.PlayAudio(0);
             if (rdir == 1)
                 animator.SetBool("ForwardRight", true);
             else if (rdir == -1)

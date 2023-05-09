@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sounds : MonoBehaviour
 {
     public AudioClip[] audioClip;
-    private AudioSource audioSource;
+    public AudioSource audioSource;
 
     void Start()
     {
@@ -15,7 +15,12 @@ public class Sounds : MonoBehaviour
     public IEnumerator PlayAudio(int i)
     {
         audioSource.clip = audioClip[i];
-        audioSource.Play();
-        yield return new WaitForSeconds(audioSource.clip.length);
+
+        while (true)
+        {
+            audioSource.Play();
+            yield return new WaitForSeconds(audioSource.clip.length);
+        }
+        
     }
 }
