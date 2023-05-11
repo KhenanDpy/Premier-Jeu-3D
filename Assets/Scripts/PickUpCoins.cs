@@ -12,6 +12,8 @@ public class PickUpCoins : MonoBehaviour
 
     public CoinGenerator coinGoal;
 
+    private GameObject father;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,10 +27,9 @@ public class PickUpCoins : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        GameObject father = other.transform.parent.gameObject;
-
         if (other.gameObject.CompareTag("GoldCoin"))
-        {
+        { 
+            father = other.transform.parent.gameObject;
             points += 5;
             Destroy(other.gameObject); 
             Destroy(father);
@@ -39,6 +40,7 @@ public class PickUpCoins : MonoBehaviour
         }
         if (other.gameObject.CompareTag("SilverCoin"))
         {
+            father = other.transform.parent.gameObject;
             points++;
             Destroy(other.gameObject);
             Destroy(father);

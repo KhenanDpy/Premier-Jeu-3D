@@ -43,6 +43,9 @@ public class Movements : MonoBehaviour
     bool walk, run, landing;
     public Sounds sounds;
 
+    [Header("Pour activer ou non la camera avec lerp")]
+    public bool lerpY;
+
 
     private bool Climbing()
     {
@@ -175,7 +178,12 @@ public class Movements : MonoBehaviour
         }
     }
 
-    /*private Vector3 cameraWantedPosition; *A* */
+    private Vector3 cameraWantedPosition;
+
+    public Camera lerpCamera;
+    public Camera normalCamera;
+
+    public float lerpCameraSpeed = 3;
 
     private void WhereToLook()
     {
@@ -198,14 +206,37 @@ public class Movements : MonoBehaviour
                 if (rotationX < minRotationX)
                     rotationX = minRotationX;
             }
-            float dy = 1.75f * (1f + rotationX / maxRotationX);
-            float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f);
-            //cameraWantedPosition = new Vector3(0f, dy, dz); *A*
+
+            if(!lerpY)
+            {
+                lerpCamera.gameObject.SetActive(false);
+                normalCamera.gameObject.SetActive(true);
 
 
-            _camera.transform.localPosition = new Vector3(0f, dy, dz);
-            _camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
+                float dy = 1.75f * (1f + rotationX / maxRotationX);
+                float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f);
+
+                _camera.transform.localPosition = new Vector3(0f, dy, dz);
+                _camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
+            }
+            
+            if (lerpY)
+            {
+                normalCamera.gameObject.SetActive(false);
+                lerpCamera.gameObject.SetActive(true);
+
+
+                cameraWantedPosition = this.transform.position + this.transform.forward * -3 + this.transform.up * 3 + this.transform.forward * -zoom;
+
+                _camera.transform.localPosition = Vector3.Lerp(_camera.transform.localPosition, cameraWantedPosition, lerpCameraSpeed * Time.deltaTime);
+
+                _camera.transform.rotation = this.transform.rotation * Quaternion.Euler(rotationX, 0, 0);
+            }
+            
         }
+
+        
+
         //à mettre dans la soutenance : pour faire tourner la caméra autour du personnage
         //                              mais il faudrait adapter les déplacements (par rapport à la caméra) et les animations  
 

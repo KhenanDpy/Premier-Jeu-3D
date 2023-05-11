@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour
     [SerializeField] Countdown countdown;
     public PickUpCoins resetCoinsValue;
     public CoinGenerator resetCoins;
+    public LightingChange resetLighting;
 
     public int pointsToDZ;
 
@@ -18,5 +19,6 @@ public class GameController : MonoBehaviour
         resetCoins.darkZoneGate.SetActive(true);
         resetCoinsValue.Init();
         resetCoinsValue.pointsToDZ = pointsToDZ;
+        resetLighting.ResetLight();
     }
 }

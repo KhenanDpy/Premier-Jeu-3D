@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneTransition : MonoBehaviour
 {
     [SerializeField] private GameObject player;
-    Scene sceneName;
+    [SerializeField] private GameObject mainCamera;
 
     void Start()
     {
@@ -19,6 +19,7 @@ public class SceneTransition : MonoBehaviour
         if(collision.collider.gameObject.CompareTag("Player")){
             //SceneManager.MoveGameObjectToScene(player, sceneName);
             DontDestroyOnLoad(player);
+            DontDestroyOnLoad(mainCamera);
             SceneManager.LoadScene("FinalScene");
         }
     }

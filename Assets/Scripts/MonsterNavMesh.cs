@@ -79,7 +79,6 @@ public class MonsterNavMesh : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("trigger avec " + other);
             pursuit = true;
         }
     }
@@ -90,12 +89,10 @@ public class MonsterNavMesh : MonoBehaviour
         {
             // on suit le personnage
             _navMeshAgent.destination = player.position;
-            Debug.Log("suit");
         }
         else
         {
             _navMeshAgent.destination = _movePosTransform.position;
-            Debug.Log("se balade");
         }
 
         /*timerTime += Time.deltaTime;
