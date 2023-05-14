@@ -7,10 +7,9 @@ public class LightingChange : MonoBehaviour
 {
     public Light directionalLight;
     public Camera lerpCamera;
-    public Camera normalCamera;
     public Light[] flickeringLights;
 
-    public int onOff;
+    public int onOff; // 1 = on, -1 = off
 
     private void Start()
     {
@@ -19,17 +18,18 @@ public class LightingChange : MonoBehaviour
 
     public void ResetLight()
     {
+        // desactivate flickering lights and turn on the skybox
         for (int i = 0; i < flickeringLights.Length; i++)
         {
             flickeringLights[i].gameObject.SetActive(false);
         }
         directionalLight.gameObject.SetActive(true);
         lerpCamera.clearFlags = CameraClearFlags.Skybox;
-        normalCamera.clearFlags = CameraClearFlags.Skybox;
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        // if triggered, activate flickering lights and turn off the skybox
         if (other.gameObject.CompareTag("Player"))
         {
             onOff *= -1;
@@ -47,7 +47,6 @@ public class LightingChange : MonoBehaviour
                 }
                 directionalLight.gameObject.SetActive(false);
                 lerpCamera.clearFlags = CameraClearFlags.SolidColor;
-                normalCamera.clearFlags = CameraClearFlags.SolidColor;
             }
         }
     }

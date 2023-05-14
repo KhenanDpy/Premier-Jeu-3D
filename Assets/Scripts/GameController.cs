@@ -8,17 +8,24 @@ public class GameController : MonoBehaviour
     public PickUpCoins resetCoinsValue;
     public CoinGenerator resetCoins;
     public LightingChange resetLighting;
+    public Life lifePoints;
+    public Attack resetMonsters;
 
-    public int pointsToDZ;
+    public int setLifePoints;
+    public float setCountdownDuration;
+    public int pointsToAccessDarkZone; // points to get until the dark zone is accessible
 
     public void ResetAll()
     {
+        lifePoints.lifePoints = setLifePoints;
+        countdown.countdownDuration = setCountdownDuration;
         countdown.Reset();
         resetCoins.RemoveAll();
-        resetCoins.coinGoalReached = true;
+        resetCoins.coinGoalReached = false;
         resetCoins.darkZoneGate.SetActive(true);
         resetCoinsValue.Init();
-        resetCoinsValue.pointsToDZ = pointsToDZ;
+        resetCoinsValue.pointsToAccessDarkZone = pointsToAccessDarkZone;
         resetLighting.ResetLight();
+        resetMonsters.ResetMonsters();
     }
 }

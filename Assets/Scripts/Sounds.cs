@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Sounds : MonoBehaviour
 {
-    public AudioClip[] audioClip;
+    public AudioClip[] audioClip;               //!\ A REFAIRE CAR NON FONCTIONNEL. IL FAUT QUE LES SONS VIENNENT DIRECTEMENT DES ACTIONS ET NON D'UN TABLEAU /!\\
     public AudioSource audioSource;
 
     void Start()

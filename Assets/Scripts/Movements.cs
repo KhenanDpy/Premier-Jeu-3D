@@ -11,7 +11,7 @@ public class Movements : MonoBehaviour
     public bool alive   = true;
 
     [SerializeField]
-    Camera _camera;
+    Camera lerpCamera;
 
     [SerializeField]
     float jump, speedLimit, zoom; //force,acceleration, 
@@ -33,7 +33,7 @@ public class Movements : MonoBehaviour
     public LayerMask groundLayers;
     public float airSpeedFactor;
 
-    private Vector3 deplacement;
+    private Vector3 mouvement;
     private float limit;
 
     // front and right direction (-1, 0, or 1)
@@ -43,13 +43,12 @@ public class Movements : MonoBehaviour
     bool walk, run, landing;
     public Sounds sounds;
 
-    [Header("Pour activer ou non la camera avec lerp")]
-    public bool lerpY;
 
-
-    private bool Climbing()
+    // Pour trouver depuis l'éditeur la bonne valeur
+    public float raycastRange;
+    private bool OnSlope()
     {
-        if (Physics.Raycast(rb.transform.position, Vector3.down, out slope, 0.2f))
+        if (Physics.Raycast(rb.transform.position, Vector3.down, out slope, raycastRange))
         {
             float angle = Vector3.Angle(Vector3.up, slope.normal);
             return angle < 35 && angle != 0;
@@ -79,9 +78,6 @@ public class Movements : MonoBehaviour
     {
         if (alive)
         {
-
-            // gestion de la souris
-            WhereToLook();
 
             // Positionnement de la sphère au pied du personnage
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
@@ -149,7 +145,6 @@ public class Movements : MonoBehaviour
 
                 rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
                 rb.AddForce(transform.up * jump, ForceMode.Impulse);
-
             }
 
         }
@@ -157,18 +152,28 @@ public class Movements : MonoBehaviour
         {
             transform.rotation = Quaternion.identity;
         }
+
     }
 
     // on dirait que le déplacement est plus fluide quand c'est dans le fixedupdate plutôt que le update
     private void FixedUpdate()
     {
-        deplacement = (transform.forward * fdir + transform.right * rdir).normalized;
-        if (Climbing())
+
+        // gestion de la souris
+        WhereToLook();
+
+        mouvement = (transform.forward * fdir + transform.right * rdir).normalized;
+        if (OnSlope())
         {
-            deplacement = (Vector3.ProjectOnPlane(deplacement, slope.normal) + Vector3.down * 0.01f).normalized;
+            mouvement = Vector3.ProjectOnPlane(mouvement, slope.normal).normalized;
+
+            if (rb.velocity.y > 0f)
+            {
+                mouvement = (mouvement + Vector3.down * 0.02f).normalized;
+            }
         }
 
-        rb.AddForce(deplacement * limit * 20f, ForceMode.Force);
+        rb.AddForce(mouvement * limit * 20f, ForceMode.Force);
 
         Vector3 horizontalSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         if (horizontalSpeed.magnitude > limit)
@@ -179,9 +184,6 @@ public class Movements : MonoBehaviour
     }
 
     private Vector3 cameraWantedPosition;
-
-    public Camera lerpCamera;
-    public Camera normalCamera;
 
     public float lerpCameraSpeed = 3;
 
@@ -207,31 +209,16 @@ public class Movements : MonoBehaviour
                     rotationX = minRotationX;
             }
 
-            if(!lerpY)
-            {
-                lerpCamera.gameObject.SetActive(false);
-                normalCamera.gameObject.SetActive(true);
+            float dy = 1.75f * (1f + rotationX / maxRotationX); // Variation de hauteur de la caméra par rapport à la rotation
+            float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f); // Eloignement de la caméra
+            lerpCamera.gameObject.SetActive(true);
 
 
-                float dy = 1.75f * (1f + rotationX / maxRotationX);
-                float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f);
+            cameraWantedPosition = this.transform.position + new Vector3(0f, dy, 0f) + this.transform.forward * dz;
 
-                _camera.transform.localPosition = new Vector3(0f, dy, dz);
-                _camera.transform.localEulerAngles = new Vector3(rotationX, 0, 0);
-            }
-            
-            if (lerpY)
-            {
-                normalCamera.gameObject.SetActive(false);
-                lerpCamera.gameObject.SetActive(true);
+            lerpCamera.transform.position = Vector3.Lerp(lerpCamera.transform.position, cameraWantedPosition, lerpCameraSpeed * Time.deltaTime);
 
-
-                cameraWantedPosition = this.transform.position + this.transform.forward * -3 + this.transform.up * 3 + this.transform.forward * -zoom;
-
-                _camera.transform.localPosition = Vector3.Lerp(_camera.transform.localPosition, cameraWantedPosition, lerpCameraSpeed * Time.deltaTime);
-
-                _camera.transform.rotation = this.transform.rotation * Quaternion.Euler(rotationX, 0, 0);
-            }
+            lerpCamera.transform.rotation = this.transform.rotation * Quaternion.Euler(rotationX, 0, 0);
             
         }
 
@@ -273,7 +260,6 @@ public class Movements : MonoBehaviour
 
         if (fdir == 1)
         {
-            sounds.PlayAudio(0);
             if (rdir == 1)
                 animator.SetBool("ForwardRight", true);
             else if (rdir == -1)

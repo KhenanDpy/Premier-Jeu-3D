@@ -22,8 +22,8 @@ public class FlickeringLights : MonoBehaviour
     {
         while (true)
         {
-            flickeringLight.intensity = rand.Next(1, 20);
-            Debug.Log("lumière");
+            // intensity is set randomly between 1 and 20 with a 0.05 seconds delay to simulate a flickering effect
+            flickeringLight.intensity = rand.Next(1, 20); 
             yield return new WaitForSeconds(0.05f);
         }
     }

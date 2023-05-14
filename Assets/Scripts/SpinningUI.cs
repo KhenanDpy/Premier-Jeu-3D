@@ -8,6 +8,7 @@ public class SpinningUI : MonoBehaviour
 
     void Update()
     {
+        // spinning the UI in the final scene
         transform.Rotate(Vector3.up * Time.deltaTime * speed);
     }
 }

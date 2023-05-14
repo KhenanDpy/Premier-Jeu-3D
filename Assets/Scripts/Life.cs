@@ -6,13 +6,13 @@ using UnityEngine;
 public class Life : MonoBehaviour
 {
     [SerializeField] GameObject[] hearts;
-    public int life;
+    public List<GameObject> heartsActive = new List<GameObject>();
+    public int lifePoints = 3;
+    int life;
     public Movements player;
     public GameObject deadGO;
     public Transform respawn;
     public GameController controller;
-
-    //faire un bouton pour respawn
 
     void Start()
     {
@@ -21,18 +21,23 @@ public class Life : MonoBehaviour
 
     public void Init()
     {
-        transform.position = respawn.position;
+        transform.position = respawn.position;                                      //!\ POUVOIR AJOUTER/ENLEVER DES COEURS AVANT DE COMMENTER CE CODE /!\\
         player.GetComponent<Rigidbody>().useGravity = true;
         player.alive = true;
         deadGO.SetActive(false);
-        for (int i = 0; i < hearts.Length; i++)
-        {
-            hearts[i].gameObject.SetActive(true);
-        }
-        life = hearts.Length;
-        
-
+        heartsActive.Clear();
         controller.ResetAll();
+        
+        for (int j = 0; j < lifePoints; j++)
+        {
+            heartsActive.Add(hearts[j]);
+        }
+        for (int i = 0; i < heartsActive.Count; i++)
+        {                          // Créer un ensemble de coeur ajustable dans le canvas (chercher sur internet)
+            heartsActive[i].gameObject.SetActive(true);
+        }
+        life = heartsActive.Count;
+        
     }
 
     void Update()
@@ -56,7 +61,7 @@ public class Life : MonoBehaviour
         if (life >= 1)
         {
             life -= damage;
-            hearts[life].gameObject.SetActive(false);
+            heartsActive[life].gameObject.SetActive(false);
             if (life < 1)
             {
                 player.alive = false;

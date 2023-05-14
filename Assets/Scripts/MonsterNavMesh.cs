@@ -19,7 +19,7 @@ public class MonsterNavMesh : MonoBehaviour
 
     Random rand = new Random();
 
-    /* Pour le field of view */
+    /* for the field of view */
     bool pursuit;
 
     void Awake()
@@ -55,18 +55,16 @@ public class MonsterNavMesh : MonoBehaviour
         {
             if (pursuit)
             {
-                // on suit le personnage
-                // on ne teste plus les triggers pendant 2s
-                transform.GetChild(5).transform.gameObject.SetActive(false);
-                // Debug.Log("a bougé");
-                yield return new WaitForSeconds(2);
-                // on va relancer les triggers pour tester si on voit toujours le personnage
+                // following the player
+                transform.GetChild(4).transform.gameObject.SetActive(false); // desactivate the field of view trigger
+                yield return new WaitForSeconds(2); // wait for 2 seconds
                 pursuit = false;
-                transform.GetChild(5).transform.gameObject.SetActive(true);
+                transform.GetChild(4).transform.gameObject.SetActive(true); // activate the field of view trigger
+                // if the player is still on the field of view, the monster's chase mode is activate
             }
             else
             {
-                float seconds = rand.Next(3,7); // On attend entre 3 et 7 secondes avant de faire changer la position du monstre
+                float seconds = rand.Next(3,7); // wait between 3 and 7 seconds before changing the monster destination
                 yield return new WaitForSeconds(seconds);
                 _movePosTransform.transform.position = new Vector3(rand.Next(Convert.ToInt32(transform.position.x - 20), Convert.ToInt32(transform.position.x + 20)),
                                                                    0,
