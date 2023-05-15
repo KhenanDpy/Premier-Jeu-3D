@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Attack : MonoBehaviour
 {
@@ -21,6 +22,20 @@ public class Attack : MonoBehaviour
             {
                 collision.gameObject.SetActive(false);
                 enemyKilled++;
+            }
+            else if (collision.collider.gameObject.CompareTag("Boss"))
+            {
+                if(collision.gameObject.GetComponent<NavMeshAgent>().speed > 8)
+                {
+                    collision.gameObject.SetActive(false);
+                    enemyKilled += 5;
+                }
+                else
+                {
+                    collision.gameObject.GetComponent<NavMeshAgent>().speed *= 2f;
+                }
+
+                
             }
             else if (collision.collider.gameObject.CompareTag("Damageing")) // else we take 1 dmg and we become invunerable
             {

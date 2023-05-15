@@ -7,8 +7,11 @@ public class CoinGenerator : MonoBehaviour
     private GameObject coin;
     public GameObject[] coinType;
     public GameObject platformsParent;
+    public Attack monsterKilled;
     System.Random rand = new System.Random();
     int children;
+
+    int goldenThreshold;
 
     /* pour accéder à la dark zone */
     public bool coinGoalReached;
@@ -17,6 +20,7 @@ public class CoinGenerator : MonoBehaviour
     void Start()
     {
         children = platformsParent.transform.childCount;
+        goldenThreshold = 10;
         Invoke("Spawn", 3f);
     }
 
@@ -26,7 +30,7 @@ public class CoinGenerator : MonoBehaviour
         int randomCoinType = rand.Next(10);
         int spawnDelay = rand.Next(3, 5);
         
-        if (randomCoinType > 8)
+        if (randomCoinType > goldenThreshold)
         {
             coin = coinType[0];
         }
@@ -65,5 +69,10 @@ public class CoinGenerator : MonoBehaviour
             if (platformsParent.transform.GetChild(i).transform.childCount > 1)
                 Destroy(platformsParent.transform.GetChild(i).transform.GetChild(1).transform.gameObject);
         }
+    }
+
+    void Update()
+    {
+        goldenThreshold = 10 - (int)(monsterKilled.enemyKilled / 1.5f); 
     }
 }

@@ -13,13 +13,13 @@ public class SceneTransition : MonoBehaviour
     PickUpCoins playerScore;
     FinalStats stats;
     Countdown countdown;
-    Attack monstersCounter;
+    Attack monstersCount;
 
     void OnCollisionEnter(Collision collision)
     {
         // load the final scene and keep everything associated with the player to control it in that new scene
         if(collision.collider.gameObject.CompareTag("Player")){
-            if (player != null)
+            if (player != null)         // To make any object able to teleport 
             {
                 DontDestroyOnLoad(player);
                 DontDestroyOnLoad(lerpCamera);
@@ -29,11 +29,11 @@ public class SceneTransition : MonoBehaviour
                 stats.score = playerScore.points;
                 countdown = countdownGO.GetComponent<Countdown>();
                 stats.timeToFinish = countdown.countdownDuration - countdown.time;
-                monstersCounter = player.GetComponent<Attack>();
-                stats.monsterKilled = monstersCounter.enemyKilled;
+                monstersCount = player.GetComponent<Attack>();
+                stats.monsterKilled = monstersCount.enemyKilled;
 
             }
-            else
+            else // To return to first scene
             {
                 Destroy(GameObject.Find("Player"));
                 Destroy(GameObject.Find("LerpCamera"));

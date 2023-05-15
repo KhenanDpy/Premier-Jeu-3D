@@ -28,18 +28,20 @@ public class PickUpCoins : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("GoldCoin"))
-        { 
+        {
             father = other.transform.parent.gameObject;
             points += 5;
-            Destroy(other.gameObject); 
-            Destroy(father);
+            //other.gameObject.GetComponent<MeshRenderer>().gameObject.SetActive(false);
+            Destroy(other.gameObject, 2);
+            Destroy(father, 2);
         }
         if (other.gameObject.CompareTag("SilverCoin"))
         {
             father = other.transform.parent.gameObject;
             points++;
-            Destroy(other.gameObject);
-            Destroy(father);
+            other.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            Destroy(other.gameObject,2);
+            Destroy(father,2);
         }
 
         if (points >= pointsToAccessDarkZone)

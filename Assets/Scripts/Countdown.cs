@@ -20,6 +20,7 @@ public class Countdown : MonoBehaviour
     [SerializeField] private string sceneToLoad;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject lerpCamera;
+    public LightingChange resetLight;
     PickUpCoins playerScore;
     FinalStats stats;
     Attack monstersCounter;
@@ -57,6 +58,7 @@ public class Countdown : MonoBehaviour
                 monstersCounter = player.GetComponent<Attack>();
                 stats.monsterKilled = monstersCounter.enemyKilled;
 
+                resetLight.ResetLight();
 
                 SceneManager.LoadScene(sceneToLoad);
                 player.transform.position = new Vector3(0, 0, -30);

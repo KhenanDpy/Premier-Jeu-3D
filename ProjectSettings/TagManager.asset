@@ -9,6 +9,7 @@ TagManager:
   - Damageing
   - GoldCoin
   - SilverCoin
+  - Boss
   layers:
   - Default
   - TransparentFX
