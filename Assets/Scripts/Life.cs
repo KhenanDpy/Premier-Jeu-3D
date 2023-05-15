@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/*
+ * The life points of the player.
+ */
+
 public class Life : MonoBehaviour
 {
     [SerializeField] GameObject[] hearts;
@@ -21,7 +25,7 @@ public class Life : MonoBehaviour
 
     public void Init()
     {
-        transform.position = respawn.position;                                      //!\ POUVOIR AJOUTER/ENLEVER DES COEURS AVANT DE COMMENTER CE CODE /!\\
+        transform.position = respawn.position;
         player.GetComponent<Rigidbody>().useGravity = true;
         player.alive = true;
         deadGO.SetActive(false);
@@ -30,11 +34,11 @@ public class Life : MonoBehaviour
         
         for (int j = 0; j < lifePoints; j++)
         {
-            heartsActive.Add(hearts[j]);
+            heartsActive.Add(hearts[j]); // Create a list of hearts with the number entered in GameController from the editor
         }
         for (int i = 0; i < heartsActive.Count; i++)
-        {                          // Créer un ensemble de coeur ajustable dans le canvas (chercher sur internet)
-            heartsActive[i].gameObject.SetActive(true);
+        { 
+            heartsActive[i].gameObject.SetActive(true); // Display those hearts
         }
         life = heartsActive.Count;
         
@@ -44,19 +48,19 @@ public class Life : MonoBehaviour
     {
 
 
-        if (transform.position.y < -50f)
+        if (transform.position.y < -50f) // if the player falls, he dies
         {
             player.alive = false;
         }
 
-        if (player.alive == false)
+        if (player.alive == false) // if the player is dead, the gravity is stopped (else it will spin on itself)
         {
             player.GetComponent<Rigidbody>().useGravity = false;
             deadGO.SetActive(true);
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage) // when taking damage, a heart is desactivated
     {
         if (life >= 1)
         {
@@ -69,9 +73,8 @@ public class Life : MonoBehaviour
         }
     }
 
-    public void EndGame()
+    public void EndGame() // quit the game
     {
         Application.Quit();
-        Debug.Log("On quitte");
     }
 }

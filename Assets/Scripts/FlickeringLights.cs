@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/*
+ * Allows a light to flicker
+ */
+
 public class FlickeringLights : MonoBehaviour
 {
     private Light flickeringLight;

@@ -3,6 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
+/*
+ * The movements of the player. It also has every animations linked to each movement.
+ * The physics isn't good, there are adjusments to do.
+ */
+
 public class Movements : MonoBehaviour
 {
     Animator animator;
@@ -14,11 +19,11 @@ public class Movements : MonoBehaviour
     Camera lerpCamera;
 
     [SerializeField]
-    float jump, speedLimit, zoom; //force,acceleration, 
+    float jump, speedLimit, zoom; 
 
     private RaycastHit slope;
 
-    /* Paramétrage de la souris */
+    // Parameters of the mouse
     float rotationX = 0f;
     float maxRotationX = 30f;
     float minRotationX = -30f;
@@ -39,14 +44,10 @@ public class Movements : MonoBehaviour
     // front and right direction (-1, 0, or 1)
     private int fdir = 0, rdir = 0;
 
-    /* Pour les sons */
-    bool walk, run, landing;
-    public Sounds sounds;
 
-
-    // Pour trouver depuis l'éditeur la bonne valeur
+    // Changeable in the editor if necessary
     public float raycastRange;
-    private bool OnSlope()
+    private bool OnSlope() // when on a slope, the normal change so the mouvement is orientated in the good direction
     {
         if (Physics.Raycast(rb.transform.position, Vector3.down, out slope, raycastRange))
         {
@@ -60,17 +61,16 @@ public class Movements : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
-        // pour forcer le curseur à rester au centre
-        //       UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        // To force the cursor to stay centered
+        // UnityEngine.Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.gameObject.CompareTag("Damageing"))
+        if (collision.collider.gameObject.CompareTag("Damageing")) // When taking damage there is a little knockback (not really working)
         {
             rb.velocity = Vector3.zero;
             rb.AddForce((transform.up - transform.forward).normalized * jump, ForceMode.Impulse);
-            Debug.Log("on recule");
         }
     }
 
@@ -79,9 +79,9 @@ public class Movements : MonoBehaviour
         if (alive)
         {
 
-            // Positionnement de la sphère au pied du personnage
+            // Position the sphere to the feet of the player
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
-            // On teste les collisions de la sphère dans le GroundedLayers
+            // It tests if the sphere is on the groundedlayers. If yes, then the player is grounded
             isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
             animator.SetBool("Grounded", isGrounded);
 
@@ -90,27 +90,26 @@ public class Movements : MonoBehaviour
             else
                 rb.drag = 0;
 
-            // Si on n'appuie sur aucune touche
+            // If no key is pressed
             if ((Input.anyKey == false))
             {
-                animator.SetBool("Idle", true); // L'animation Idle s'active
-                sounds.audioSource.Stop();
+                animator.SetBool("Idle", true); // the idle animation is activated
             }
             else
             {
-                animator.SetBool("Idle", false); // L'animation Idle se désactive
+                animator.SetBool("Idle", false); // the idle animation is desactivated
             }
 
 
             limit = speedLimit;
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift)) // if shift is pressed, the player moves faster
             {
                 limit *= 1.5f;
             }
                 
-            if(!isGrounded)
+            if(!isGrounded) // to add air control
             {
-                limit *= airSpeedFactor;
+                limit *= airSpeedFactor; // airSpeedFactor is adjustable from the editor
             }
 
             if (Input.GetKey(KeyCode.Z))
@@ -137,11 +136,11 @@ public class Movements : MonoBehaviour
 
             Animate();
 
-            // Si on appuie sur la barre d'espace
+            // If spacebar is pressed
             if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
             {
-                animator.SetBool("Jump", true); // L'animation Jump s'active
-                animator.SetBool("Grounded", false); // L'animation Grounded se désactive
+                animator.SetBool("Jump", true); // the jump animation is activated
+                animator.SetBool("Grounded", false); // the grounded animation is desactivated
 
                 rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
                 rb.AddForce(transform.up * jump, ForceMode.Impulse);
@@ -155,11 +154,11 @@ public class Movements : MonoBehaviour
 
     }
 
-    // on dirait que le déplacement est plus fluide quand c'est dans le fixedupdate plutôt que le update
+    // for better fluidity
     private void FixedUpdate()
     {
 
-        // gestion de la souris
+        // management of the mouse
         WhereToLook();
 
         mouvement = (transform.forward * fdir + transform.right * rdir).normalized;
@@ -189,11 +188,11 @@ public class Movements : MonoBehaviour
 
     private void WhereToLook()
     {
-        // rotation par la souris
+        // rotation of the mouse
         rotationY += Input.GetAxis("Mouse X") * sensitivityH;
         rb.transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
-        if (lookUp) // pour activer le mouvement vertical de la caméra
+        if (lookUp) // to activate the vertical mouvement of the camera (from editor)
         {
             float deltaX = -Input.GetAxis("Mouse Y") * sensitivityV;
             if ((deltaX > 0) && (rotationX < maxRotationX))
@@ -209,8 +208,8 @@ public class Movements : MonoBehaviour
                     rotationX = minRotationX;
             }
 
-            float dy = 1.75f * (1f + rotationX / maxRotationX); // Variation de hauteur de la caméra par rapport à la rotation
-            float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f); // Eloignement de la caméra
+            float dy = 1.75f * (1f + rotationX / maxRotationX); // Variation of the height of the camera to its rotation
+            float dz = -zoom * Mathf.Cos(rotationX * Mathf.PI / 180f); // Distance of the camera
             lerpCamera.gameObject.SetActive(true);
 
 
@@ -222,19 +221,9 @@ public class Movements : MonoBehaviour
             
         }
 
-        
 
-        //à mettre dans la soutenance : pour faire tourner la caméra autour du personnage
-        //                              mais il faudrait adapter les déplacements (par rapport à la caméra) et les animations  
 
-        /*posCamera.Set(rb.transform.position.x + distance * Mathf.Cos(rotationY * Mathf.PI / 180f),
-                      rb.transform.position.y+3,
-                      rb.transform.position.z + distance * Mathf.Sin(rotationY * Mathf.PI / 180f));
-
-        camera.transform.SetPositionAndRotation(posCamera, Quaternion.identity);
-        camera.transform.LookAt(rb.transform.position);*/
-
-        // Zoom avec la molette de la souris
+        // Zoom with the mouse scroll wheel
         if (Input.mouseScrollDelta.y > 0 && zoom > 0)
         {
             zoom--;

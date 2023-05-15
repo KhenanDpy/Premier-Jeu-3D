@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * To set any parameters from editor and reset everything when restarting a run
+ */
 public class GameController : MonoBehaviour
 {
     [SerializeField] Countdown countdown;

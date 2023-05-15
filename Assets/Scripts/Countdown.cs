@@ -6,12 +6,14 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/*
+ * Countdown of the game. Reach the end of the countdown to win and reach the final scene
+ */
+
 public class Countdown : MonoBehaviour
 {
     public float time;
-    public float countdownDuration = 180f;
-    float timerInterval = 60f;
-    float tick;
+    public float countdownDuration = 120f;
     public Life tooLate;
 
     float end;
@@ -28,7 +30,6 @@ public class Countdown : MonoBehaviour
     void Awake()
     {
         time = Time.time;
-        tick = countdownDuration - timerInterval;
         Reset();
     }
 
@@ -39,18 +40,12 @@ public class Countdown : MonoBehaviour
             GetComponent<TextMeshProUGUI>().text = string.Format("{0:0}:{1:00}", Mathf.Floor(time / 60), time % 60).ToString(); // set the time with the format min:sec
             time = end - Time.time;
 
-            if(time == tick)
-            {
-                tick = time - timerInterval;
-                Debug.Log("timer"); // mettre un son toutes les minutes
-            }
-
             if (time <= 0f)
             {
-                //tooLate.player.alive = false;
-                DontDestroyOnLoad(player);
-                DontDestroyOnLoad(lerpCamera);
+                DontDestroyOnLoad(player);      // keep the player for next scene
+                DontDestroyOnLoad(lerpCamera);  // keep the camera for next scene
 
+                // get the stats we want to display
                 stats = player.GetComponent<FinalStats>();
                 playerScore = player.GetComponent<PickUpCoins>();
                 stats.score = playerScore.points;
@@ -61,7 +56,7 @@ public class Countdown : MonoBehaviour
                 resetLight.ResetLight();
 
                 SceneManager.LoadScene(sceneToLoad);
-                player.transform.position = new Vector3(0, 0, -30);
+                player.transform.position = new Vector3(0, 0, -30); // reposition the player
 
             }
             

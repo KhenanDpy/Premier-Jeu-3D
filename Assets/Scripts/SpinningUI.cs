@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Allows the object to rotate
+ */
+
 public class SpinningUI : MonoBehaviour
 {
     int speed = 30;

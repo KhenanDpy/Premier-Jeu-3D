@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+/*
+ * Allows the player to kill the monsters and to take damage from them. 
+ */
 public class Attack : MonoBehaviour
 {
     public Life life;
@@ -21,14 +24,14 @@ public class Attack : MonoBehaviour
             if (collision.collider.gameObject.CompareTag("Weakness")) // if weakpoint touched, we kill it
             {
                 collision.gameObject.SetActive(false);
-                enemyKilled++;
+                enemyKilled++;  // +1 on the monster kill counter
             }
-            else if (collision.collider.gameObject.CompareTag("Boss"))
+            else if (collision.collider.gameObject.CompareTag("Boss"))  // else if the boss is touched, his speed increases. If he reach a certain speed, he dies
             {
                 if(collision.gameObject.GetComponent<NavMeshAgent>().speed > 8)
                 {
                     collision.gameObject.SetActive(false);
-                    enemyKilled += 5;
+                    enemyKilled += 5;  // +5 on the monster kill counter
                 }
                 else
                 {

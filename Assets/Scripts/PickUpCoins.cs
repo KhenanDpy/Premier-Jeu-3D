@@ -2,6 +2,10 @@ using UnityEngine;
 using TMPro;
 using Unity.VisualScripting;
 
+/*
+ * Allows the player to pick up coins. It increases the score depending of the coin collected.
+ */
+
 public class PickUpCoins : MonoBehaviour
 {
     public TMP_Text score;
@@ -14,7 +18,6 @@ public class PickUpCoins : MonoBehaviour
 
     private GameObject father;
 
-    // Start is called before the first frame update
     void Start()
     {
         Init();
@@ -27,15 +30,15 @@ public class PickUpCoins : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("GoldCoin"))
+        if (other.gameObject.CompareTag("GoldCoin")) // add 5 points and make the goldcoin after 2 sec so the sound when picking it up can play
         {
             father = other.transform.parent.gameObject;
             points += 5;
-            //other.gameObject.GetComponent<MeshRenderer>().gameObject.SetActive(false);
+            other.gameObject.GetComponent<MeshRenderer>().enabled = false;
             Destroy(other.gameObject, 2);
             Destroy(father, 2);
         }
-        if (other.gameObject.CompareTag("SilverCoin"))
+        if (other.gameObject.CompareTag("SilverCoin")) // add 1 point and make the goldcoin after 2 sec so the sound when picking it up can play
         {
             father = other.transform.parent.gameObject;
             points++;
@@ -50,7 +53,6 @@ public class PickUpCoins : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         score.text = points.ToString();

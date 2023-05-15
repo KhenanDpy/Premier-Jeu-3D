@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/*
+ * Allows to transition between 2 scenes. It can adapts to any object it is attached to
+ */
+
 public class SceneTransition : MonoBehaviour
 {
     [SerializeField] private string sceneToLoad;

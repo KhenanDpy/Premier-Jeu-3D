@@ -2,18 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Generate randomly chosen coins to a random platform from the scene
+ */
 public class CoinGenerator : MonoBehaviour
 {
     private GameObject coin;
-    public GameObject[] coinType;
+    public GameObject[] coinType; // [0] = gold, [1] = silver
     public GameObject platformsParent;
     public Attack monsterKilled;
     System.Random rand = new System.Random();
     int children;
 
-    int goldenThreshold;
+    int goldenThreshold; // to limit the spawn of gold coins
 
-    /* pour accéder à la dark zone */
+    /* to access the dark zone */
     public bool coinGoalReached;
     public GameObject darkZoneGate;
 
@@ -39,18 +42,18 @@ public class CoinGenerator : MonoBehaviour
             coin = coinType[1];
         }
 
-        if (platformsParent.transform.GetChild(randomSpawn).transform.childCount == 1)
+        if (platformsParent.transform.GetChild(randomSpawn).transform.childCount == 1) // limit so the coins can't spawn on a platform that already has a coin
         {
-            var coins = Instantiate(coin);//,transform.position, transform.rotation); // platformsParent.transform.GetChild(randomSpawn).position, platformsParent.transform.GetChild(randomSpawn).rotation);
+            var coins = Instantiate(coin);
 
             GameObject inter = new GameObject();
             inter.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
 
-            inter.transform.localPosition = Vector3.zero + Vector3.up * 2.0f;
+            inter.transform.localPosition = Vector3.zero + Vector3.up * 2.0f; // to place the coin above the platform (else it is instantiate inside the platform)
 
             coins.transform.parent = inter.transform;
 
-            Destroy(platformsParent.transform.GetChild(randomSpawn).transform.GetChild(1).transform.gameObject, 10f);
+            Destroy(platformsParent.transform.GetChild(randomSpawn).transform.GetChild(1).transform.gameObject, 10f); // the coin is destroyed after 10 sec 
         }
 
         if (coinGoalReached)
@@ -62,6 +65,7 @@ public class CoinGenerator : MonoBehaviour
 
     }
 
+    // remove every coins of the scene
     public void RemoveAll()
     {
         for (int i = 0; i < children; i++)
@@ -73,6 +77,6 @@ public class CoinGenerator : MonoBehaviour
 
     void Update()
     {
-        goldenThreshold = 10 - (int)(monsterKilled.enemyKilled / 1.5f); 
+        goldenThreshold = 10 - (int)(monsterKilled.enemyKilled / 1.5f); // the more monster you kill, the more gold coins appears
     }
 }

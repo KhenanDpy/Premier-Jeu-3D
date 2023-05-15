@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/*
+ * Allows the light to change when entering in the darkzone
+ */
+
 public class LightingChange : MonoBehaviour
 {
     public Light directionalLight;
