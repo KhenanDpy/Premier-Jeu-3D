@@ -5,7 +5,7 @@ using UnityEngine;
 /*
  * To set any parameters from editor and reset everything when restarting a run
  */
-public class GameController : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [SerializeField] Countdown countdown;
     public PickUpCoins resetCoinsValue;

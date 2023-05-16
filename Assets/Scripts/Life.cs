@@ -16,7 +16,7 @@ public class Life : MonoBehaviour
     public Movements player;
     public GameObject deadGO;
     public Transform respawn;
-    public GameController controller;
+    public GameManager controller;
 
     void Start()
     {
