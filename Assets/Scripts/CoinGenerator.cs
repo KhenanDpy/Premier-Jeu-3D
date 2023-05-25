@@ -49,7 +49,7 @@ public class CoinGenerator : MonoBehaviour
             GameObject inter = new GameObject();
             inter.transform.parent = platformsParent.transform.GetChild(randomSpawn).transform;
 
-            inter.transform.localPosition = Vector3.zero + Vector3.up * 2.0f; // to place the coin above the platform (else it is instantiate inside the platform)
+            inter.transform.localPosition = Vector3.up * 2.0f; // to place the coin above the platform (else it is instantiate inside the platform)
 
             coins.transform.parent = inter.transform;
 
